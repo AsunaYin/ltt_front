@@ -1,20 +1,22 @@
 <template>
-    <el-card class="box-card">
-        <el-form :model="loginForm" ref="loginForm" label-width="100px" class="demo-ruleForm">
-            <h1>登&nbsp;&nbsp;&nbsp;&nbsp;录</h1>
-            <br/>
-            <el-form-item label="账号" prop="account">
-                <el-input v-model="loginForm.account"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password">
-                <el-input v-model="loginForm.password"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="login()">登录</el-button>
-                <el-button type="primary" @click="toRegister">注册</el-button>
-            </el-form-item>
-        </el-form>
-    </el-card>
+    <div class="background">
+        <el-card class="box-card" shadow="always">
+            <el-form :model="loginForm" ref="loginForm" label-width="100px" class="demo-ruleForm">
+                <h1>登&nbsp;&nbsp;&nbsp;&nbsp;录</h1>
+                <br/>
+                <el-form-item prop="account" class="el-form-item">
+                    <el-input prefix-icon="el-icon-user" v-model="loginForm.account"></el-input>
+                </el-form-item>
+                <el-form-item prop="password" class="el-form-item">
+                    <el-input prefix-icon="el-icon-key" type="password" v-model="loginForm.password"></el-input>
+                </el-form-item>
+                <el-form-item class="el-form-item-button">
+                    <el-button type="primary" @click="login()">登录</el-button>
+                    <el-button type="primary" @click="toRegister">注册</el-button>
+                </el-form-item>
+            </el-form>
+        </el-card>
+    </div>
 </template>
 
 <script>
@@ -36,12 +38,12 @@ export default {
         },
         login() {
             const _this = this;
-            if (this.loginForm.account == '') {
+            if (this.loginForm.account === '') {
                 this.$message.error('账号不能为空！');
             } else {
                 this.$axios.post("http://localhost:8081/login", this.loginForm).then(function (response) {
                     console.log(response);
-                    if (response.data == "OK") {
+                    if (response.data === "OK") {
                         _this.$router.push("/index");
                     } else {
                         _this.$message.error('账号或密码错误！');
@@ -54,7 +56,5 @@ export default {
 </script>
 
 <style>
-.box-card {
-
-}
+@import "/src/css/login.css";
 </style>
