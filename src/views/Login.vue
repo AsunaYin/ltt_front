@@ -42,9 +42,12 @@ export default {
                 this.$message.error('账号不能为空！');
             } else {
                 this.$axios.post("http://localhost:8081/login", this.loginForm).then(function (response) {
-                    console.log(response);
-                    if (response.data === "OK") {
-                        _this.$router.push("/index");
+                    if (response.data === "manager") {
+                        _this.$router.push("/managerMain");
+                    } else if (response.data === "teacher") {
+                        _this.$router.push("/teacherMain");
+                    } else if (response.data === "student") {
+                        _this.$router.push("/studentMain");
                     } else {
                         _this.$message.error('账号或密码错误！');
                     }
