@@ -4,13 +4,13 @@
             <el-form :model="loginForm" ref="loginForm" label-width="100px" class="demo-ruleForm">
                 <h1>登&nbsp;&nbsp;&nbsp;&nbsp;录</h1>
                 <br/>
-                <el-form-item prop="account" class="el-form-item">
+                <el-form-item label="账号" prop="account" class="el-form-item">
                     <el-input prefix-icon="el-icon-user" v-model="loginForm.account"></el-input>
                 </el-form-item>
-                <el-form-item prop="password" class="el-form-item">
+                <el-form-item label="密码" prop="password" class="el-form-item">
                     <el-input prefix-icon="el-icon-key" type="password" v-model="loginForm.password"></el-input>
                 </el-form-item>
-                <el-form-item class="el-form-item-button">
+                <el-form-item class="el-form-item-button-login">
                     <el-button type="primary" @click="login()">登录</el-button>
                     <el-button type="primary" @click="toRegister">注册</el-button>
                 </el-form-item>
