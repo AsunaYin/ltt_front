@@ -61,45 +61,90 @@ export default {
                 account: '',
                 password: '',
                 checkPass: '',
-                auth_id: ''
+                auth_id: '3'        //默认选中学生
             },
             rules: {
-                pass: [
-                    {validator: validatePass, trigger: 'blur'}
+                account: [
+                    {required: true, message: '请输入账号', trigger: 'blur'}
+                ],
+                password: [
+                    {required: true, validator: validatePass, trigger: 'blur'}
                 ],
                 checkPass: [
-                    {validator: validatePass2, trigger: 'blur'}
+                    {required: true, validator: validatePass2, trigger: 'blur'}
+                ],
+                auth_id: [
+                    {required: true, message: '请选择身份', trigger: 'blur'}
                 ]
-            }
+            },
+            isRepeat: ''    //判断账号是否重复的返回值
         };
     },
     methods: {
-        /*去登录页*/
+        /**
+         * 去登录页
+         */
         toLoginPage() {
             this.$router.push("/");
         },
-        confirmAcc(account){
-            this.$axios.get("http://localhost:8081/register/confirmAcc?account="+account).then(function (response) {
-                console.log(response);
-                if (response.data === 'OK'){
 
+        /**
+         * 判断账号是否已经存在
+         * @param account
+         */
+        confirmAcc(account) {
+            const _this = this;
+            this.$axios.get("http://localhost:8081/register/confirmAcc?account=" + account).then(function (response) {
+                //console.log(response);
+                if (response.data === 'error') {
+                    _this.$message.error('账号已存在！请重新输入！');
                 }
-            },function (err) {
+                _this.isRepeat = response.data;
+            }, function (err) {
                 alert(err);
             })
         },
-        /*提交*/
+
+        /**
+         * 提交信息
+         * 在提交之前会判断输入的账号是否已存在，若存在则不会提交请求
+         * @param formName
+         */
         submitForm(formName) {
+            const _this = this;
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
+                    //字段验证成功，执行以下内容
+                    if (_this.isRepeat === 'success'){
+                        //若账号不存在，则提交请求
+                        _this.$axios.post("http://localhost:8081/register/submit",_this.registerForm).then(function (response) {
+                            //console.log(response)
+                            if (response.data === 'success'){
+                                //后台注册成功，回到登录页
+                                _this.toLoginPage();
+                                _this.$message({
+                                    message: '注册成功！',
+                                    type: 'success'
+                                });
+                            }
+                        }),function (err) {
+                            console.log(err);
+                        }
+                    }else {
+                        //若账号已存在，弹出错误信息
+                        _this.$message.error('账号已存在！请重新输入！');
+                    }
                 } else {
-                    console.log('error submit!!');
+                    //验证失败
                     return false;
                 }
             });
         },
-        /*重置*/
+
+        /**
+         * 重置输入框内容
+         * @param formName
+         */
         resetForm(formName) {
             this.$refs[formName].resetFields();
         }
