@@ -37,6 +37,13 @@
 <script>
 export default {
     data() {
+
+        /**
+         * 校验密码是否输入
+         * @param rule
+         * @param value
+         * @param callback
+         */
         var validatePass = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请输入密码'));
@@ -47,6 +54,13 @@ export default {
                 callback();
             }
         };
+
+        /**
+         * 二次校验密码是否相同
+         * @param rule
+         * @param value
+         * @param callback
+         */
         var validatePass2 = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请再次输入密码'));
@@ -56,6 +70,22 @@ export default {
                 callback();
             }
         };
+
+        /**
+         * 检验是否存在特殊字符
+         * @param rule
+         * @param value
+         * @param callback
+         */
+        var validateSpecialChar = (rule, value, callback) => {
+            let reg = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]");
+            if(reg.test(value)){
+                callback(new Error('不能包含特殊字符！'));
+            } else {
+                callback();
+            }
+        };
+
         return {
             registerForm: {
                 account: '',
@@ -65,10 +95,14 @@ export default {
             },
             rules: {
                 account: [
-                    {required: true, message: '请输入账号', trigger: 'blur'}
+                    {required: true, message: '请输入账号', trigger: 'blur'},
+                    {validator: validateSpecialChar, trigger: 'blur'},
+                    {min: 5, max: 16, message: '账号必须为5~16位', trigger: 'blur'}
+
                 ],
                 password: [
-                    {required: true, validator: validatePass, trigger: 'blur'}
+                    {required: true, validator: validatePass, trigger: 'blur'},
+                    {min: 5, max: 16, message: '密码必须为5~16位', trigger: 'blur'},
                 ],
                 checkPass: [
                     {required: true, validator: validatePass2, trigger: 'blur'}
