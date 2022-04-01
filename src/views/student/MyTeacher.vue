@@ -1,12 +1,13 @@
 <template>
-    <div>
-        <h1>学生主页</h1>
-    </div>
+
 </template>
 
 <script>
 export default {
-    name: "StudentMain"
+    created() {
+        const _this = this;
+        this.$axios.get()
+    }
 }
 </script>
 
