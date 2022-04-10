@@ -7,7 +7,7 @@
 <script>
 
 export default {
-  name: 'app',
+  name: 'app'
 
 }
 </script>
@@ -26,6 +26,5 @@ html,body,#app {
 body{
     margin: 0;
 }
-
 
 </style>

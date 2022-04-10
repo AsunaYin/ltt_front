@@ -36,153 +36,156 @@
 
 <script>
 export default {
-    data() {
-
-        /**
+  data () {
+    /**
          * 校验密码是否输入
          * @param rule
          * @param value
          * @param callback
          */
-        var validatePass = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请输入密码'));
-            } else {
-                if (this.registerForm.checkPass !== '') {
-                    this.$refs.registerForm.validateField('checkPass');
-                }
-                callback();
-            }
-        };
+    const validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.registerForm.checkPass !== '') {
+          this.$refs.registerForm.validateField('checkPass')
+        }
+        callback()
+      }
+    }
 
-        /**
+    /**
          * 二次校验密码是否相同
          * @param rule
          * @param value
          * @param callback
          */
-        var validatePass2 = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请再次输入密码'));
-            } else if (value !== this.registerForm.password) {
-                callback(new Error('两次输入密码不一致!'));
-            } else {
-                callback();
-            }
-        };
+    const validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.registerForm.password) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
 
-        /**
-         * 检验是否存在特殊字符
+    /**
+         * 检验账号是否存在特殊字符
          * @param rule
          * @param value
          * @param callback
          */
-        var validateSpecialChar = (rule, value, callback) => {
-            let reg = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]");
-            if(reg.test(value)){
-                callback(new Error('不能包含特殊字符！'));
-            } else {
-                callback();
-            }
-        };
+    const validateSpecialChar = (rule, value, callback) => {
+      const reg = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>《》/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？ ]")
+      if (reg.test(value)) {
+        callback(new Error('不能包含特殊字符！'))
+      } else {
+        callback()
+      }
+    }
 
-        return {
-            registerForm: {
-                account: '',
-                password: '',
-                checkPass: '',
-                auth_id: '3'        //默认选中学生
-            },
-            rules: {
-                account: [
-                    {required: true, message: '请输入账号', trigger: 'blur'},
-                    {validator: validateSpecialChar, trigger: 'blur'},
-                    {min: 5, max: 16, message: '账号必须为5~16位', trigger: 'blur'}
+    return {
+      registerForm: {
+        account: '',
+        password: '',
+        checkPass: '',
+        auth_id: '3' // 默认选中学生
+      },
+      rules: {
+        account: [
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { validator: validateSpecialChar, trigger: 'blur' },
+          { min: 5, max: 16, message: '账号必须为5~16位', trigger: 'blur' }
 
-                ],
-                password: [
-                    {required: true, validator: validatePass, trigger: 'blur'},
-                    {min: 5, max: 16, message: '密码必须为5~16位', trigger: 'blur'},
-                ],
-                checkPass: [
-                    {required: true, validator: validatePass2, trigger: 'blur'}
-                ],
-                auth_id: [
-                    {required: true, message: '请选择身份', trigger: 'blur'}
-                ]
-            },
-            isRepeat: ''    //判断账号是否重复的返回值
-        };
-    },
-    methods: {
-        /**
+        ],
+        password: [
+          { required: true, validator: validatePass, trigger: 'blur' },
+          { min: 5, max: 16, message: '密码必须为5~16位', trigger: 'blur' }
+        ],
+        checkPass: [
+          { required: true, validator: validatePass2, trigger: 'blur' }
+        ],
+        auth_id: [
+          { required: true, message: '请选择身份', trigger: 'blur' }
+        ]
+      },
+      isRepeat: '' // 判断账号是否重复的返回值
+    }
+  },
+  methods: {
+    /**
          * 去登录页
          */
-        toLoginPage() {
-            this.$router.push("/");
-        },
+    toLoginPage () {
+      this.$router.push('/')
+    },
 
-        /**
+    /**
          * 判断账号是否已经存在
          * @param account
          */
-        confirmAcc(account) {
-            const _this = this;
-            this.$axios.get("http://localhost:8081/register/confirmAcc?account=" + account).then(function (response) {
-                //console.log(response);
-                if (response.data === 'error') {
-                    _this.$message.error('账号已存在！请重新输入！');
-                }
-                _this.isRepeat = response.data;
-            }, function (err) {
-                alert(err);
-            })
-        },
+    confirmAcc (account) {
+      const _this = this
+      this.$axios.get('http://localhost:8081/register/confirmAcc?account=' + account).then(function (response) {
+        // console.log(response);
+        if (response.data === 'error') {
+          _this.$message.error('账号已存在！请重新输入！')
+        }
+        _this.isRepeat = response.data
+      }, function (err) {
+        alert(err)
+      })
+    },
 
-        /**
+    /**
          * 提交信息
          * 在提交之前会判断输入的账号是否已存在，若存在则不会提交请求
          * @param formName
          */
-        submitForm(formName) {
-            const _this = this;
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    //字段验证成功，执行以下内容
-                    if (_this.isRepeat === 'success'){
-                        //若账号不存在，则提交请求
-                        _this.$axios.post("http://localhost:8081/register/submit",_this.registerForm).then(function (response) {
-                            //console.log(response)
-                            if (response.data === 'success'){
-                                //后台注册成功，回到登录页
-                                _this.toLoginPage();
-                                _this.$message({
-                                    message: '注册成功！',
-                                    type: 'success'
-                                });
-                            }
-                        }),function (err) {
-                            console.log(err);
-                        }
-                    }else {
-                        //若账号已存在，弹出错误信息
-                        _this.$message.error('账号已存在！请重新输入！');
-                    }
-                } else {
-                    //验证失败
-                    return false;
-                }
-            });
-        },
+    submitForm (formName) {
+      const _this = this
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // 字段验证成功，执行以下内容
+          if (_this.isRepeat === 'success') {
+            // 若账号不存在，则提交请求
+            _this.$axios.post('http://localhost:8081/register/submit', _this.registerForm).then(function (response) {
+              // console.log(response)
+              if (response.data === 'success') {
+                // 后台注册成功，回到登录页
+                _this.toLoginPage()
+                _this.$message({
+                  message: '注册成功！',
+                  type: 'success'
+                })
+              }
+            }), function (err) {
+              console.log(err)
+            }
+          } else {
+            // 若账号已存在，弹出错误信息
+            _this.$message.error('账号已存在！请重新输入！')
+          }
+        } else {
+          // 验证失败
+          return false
+        }
+      })
+    },
 
-        /**
+    /**
          * 重置输入框内容
          * @param formName
          */
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
-        }
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
     }
+  },
+  created () {
+    localStorage.removeItem('account')
+    localStorage.removeItem('role')
+  }
 }
 </script>
 

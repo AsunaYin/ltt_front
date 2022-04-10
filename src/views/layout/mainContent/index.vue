@@ -7,17 +7,17 @@
 
 <script>
 
-import topHeader from "@/views/layout/mainContent/header";
-import Main from "@/views/layout/mainContent/content";
+import topHeader from '@/views/layout/mainContent/header'
+import Main from '@/views/layout/mainContent/content'
 
 export default {
-    data() {
-        return {}
-    },
-    components: {
-        topHeader,
-        Main
-    }
+  data () {
+    return {}
+  },
+  components: {
+    topHeader,
+    Main
+  }
 }
 </script>
 

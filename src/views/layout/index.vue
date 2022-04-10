@@ -7,17 +7,17 @@
 
 <script>
 
-import mainContent from "@/views/layout/mainContent/index";
-import Sidebar from "@/views/layout/Sidebar";
+import mainContent from '@/views/layout/mainContent/index'
+import Sidebar from '@/views/layout/Sidebar'
 
 export default {
-    data() {
-        return {}
-    },
-    components: {
-        Sidebar,
-        mainContent
-    }
+  data () {
+    return {}
+  },
+  components: {
+    Sidebar,
+    mainContent
+  }
 }
 </script>
 
