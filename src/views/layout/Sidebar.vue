@@ -13,25 +13,33 @@
 
                 <el-submenu index="2">
                     <template slot="title">
-                        <i class="el-icon-user"></i>
-                        <span slot="title">用户管理</span>
+                        <i class="el-icon-eleme"></i>
+                        <span slot="title">系统管理</span>
                     </template>
-                    <el-menu-item-group>
-                        <el-menu-item index="/studentList" style="padding: 0">
-                            <i class="el-icon-s-check"></i>
-                            <span>学生列表</span>
-                        </el-menu-item>
-                        <el-menu-item index="/teacherList" style="padding: 0">
-                            <i class="el-icon-s-custom"></i>
-                            <span>老师列表</span>
-                        </el-menu-item>
-                    </el-menu-item-group>
+                    <el-submenu index="2-1">
+                        <template slot="title"><i class="el-icon-user"></i>用户管理</template>
+                        <el-menu-item-group>
+                            <el-menu-item index="/studentList" style="padding: 0">
+                                <i class="el-icon-s-check"></i>
+                                <span>学生列表</span>
+                            </el-menu-item>
+                            <el-menu-item index="/teacherList" style="padding: 0">
+                                <i class="el-icon-s-custom"></i>
+                                <span>老师列表</span>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-menu-item index="/taskClassify" style="padding: 0">
+                        <i class="el-icon-more-outline"></i>
+                        <span>任务分类</span>
+                    </el-menu-item>
+
                 </el-submenu>
 
                 <el-submenu index="3">
                     <template slot="title">
                         <i class="el-icon-edit-outline"></i>
-                        <span slot="title">任务管理</span>
+                        <span slot="title">任务管理(学生)</span>
                     </template>
                     <el-menu-item-group>
                         <el-menu-item index="/choseTeacher" style="padding: 0">
@@ -46,6 +54,24 @@
                             <i class="el-icon-date"></i>
                             <span>我的任务</span>
                         </el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+
+                <el-submenu index="4">
+                    <template slot="title">
+                        <i class="el-icon-edit-outline"></i>
+                        <span slot="title">任务管理(老师)</span>
+                    </template>
+                    <el-menu-item-group>
+                        <el-menu-item index="/myStudent" style="padding: 0">
+                            <i class="el-icon-s-check"></i>
+                            <span>我的学生</span>
+                        </el-menu-item>
+                        <el-menu-item index="/addTask" style="padding: 0">
+                            <i class="el-icon-document-checked"></i>
+                            <span>发布任务</span>
+                        </el-menu-item>
+
                     </el-menu-item-group>
                 </el-submenu>
 

@@ -128,181 +128,181 @@
 import moment from 'moment'
 
 export default {
-  data () {
-    return {
-      searchForm: {
-        realName: ''
-      },
-      teacherList: [],
-      total: null,
-      pageSize: null,
+    data() {
+        return {
+            searchForm: {
+                realName: ''
+            },
+            teacherList: [],
+            total: 0,
+            pageSize: null,
 
-      // 校验规则
-      rules: {
-        realName: [
-          { required: true, message: '姓名不能为空', trigger: 'blur' },
-          { min: 2, max: 10, message: '姓名长度为2~10', trigger: 'blur' }
-        ],
-        phone: [
-          { required: true, message: '请输入联系电话', trigger: 'blur' },
-          { pattern: /^1[3456789]\d{9}$/, message: '手机格式不正确', trigger: 'blur' }
-        ]
-      },
+            // 校验规则
+            rules: {
+                realName: [
+                    {required: true, message: '姓名不能为空', trigger: 'blur'},
+                    {min: 2, max: 10, message: '姓名长度为2~10', trigger: 'blur'}
+                ],
+                phone: [
+                    {required: true, message: '请输入联系电话', trigger: 'blur'},
+                    {pattern: /^1[3456789]\d{9}$/, message: '手机格式不正确', trigger: 'blur'}
+                ]
+            },
 
-      /* 默认对话框和表单不可见 */
-      dialogTableVisible: false,
-      dialogFormVisible: false,
-      centerDialogVisible: false,
-      form: {
-        id: '',
-        account: '',
-        realName: '',
-        sex: '',
-        phone: ''
-      },
+            /* 默认对话框和表单不可见 */
+            dialogTableVisible: false,
+            dialogFormVisible: false,
+            centerDialogVisible: false,
+            form: {
+                id: '',
+                account: '',
+                realName: '',
+                sex: '',
+                phone: ''
+            },
 
-      /* 设置input框前面文字长度 */
-      formLabelWidth: '180px'
-    }
-  },
-  // 判断是否登录 与 权限是否足够
-  beforeCreate () {
-    const _this = this
-    if (localStorage.getItem('role') === null) {
-      _this.$message({
-        message: '请先登录！',
-        type: 'error',
-        offset: '80'
-      })
-      _this.$router.push('/login')
-    } else {
-      if (localStorage.getItem('role') !== '1') {
-        _this.$message({
-          message: '您的权限不足！',
-          type: 'error',
-          offset: '80'
-        })
-        _this.$router.push('/home')
-      }
-    }
-  },
-  created () {
-    const _this = this
-    this.$axios.get('http://localhost:8081/user/teacher/getAllTeachers/1').then(function (response) {
-      // console.log(response);
-      _this.pageSize = response.data.size
-      _this.teacherList = response.data.records
-      _this.total = response.data.total
-    }), function (err) {
-      console.log(err)
-    }
-  },
-  mounted () {
-    const formWidth = document.getElementById('formTable').style.width
-    document.getElementById('searchForm').style.width = formWidth
-  },
-  methods: {
-    // 查询老师
-    search () {
-      const _this = this
-      /* 当输入空值时，执行 查询全部并分页操作 */
-      if (_this.searchForm.realName === '') {
-        _this.$axios.get('http://localhost:8081/user/teacher/getAllTeachers/1').then(function (res) {
-          // console.log(res);
-          _this.pageSize = res.data.size
-          _this.teacherList = res.data.records
-          _this.total = res.data.total
-        })
-      } else {
-        this.$axios.post('http://localhost:8081/user/teacher/searchTeacher/1', _this.searchForm).then(function (res) {
-          // console.log(response);
-          _this.pageSize = res.data.size
-          _this.teacherList = res.data.records
-          _this.total = res.data.total
-        })
-      }
-    },
-
-    // 点击编辑按钮弹出对话框内赋值
-    handleEdit (row) {
-      // console.log(row);
-      this.form.id = row.id
-      this.form.account = row.account
-      this.form.realName = row.realName
-      this.form.sex = row.sex
-      this.form.phone = row.phone
-    },
-
-    // 修改→提交
-    submitForm (formName) {
-      const _this = this
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          _this.$axios.post('http://localhost:8081/user/teacher/updateTeacherInfo', _this.form).then(function (response) {
-            console.log(response)
-            if (response.data === 'success') {
-              window.location.reload()
-              _this.$message({
-                message: '更改成功',
-                type: 'success'
-              })
-              _this.dialogFormVisible = false
-            } else if (response.data === 'phone_duplicate') {
-              _this.$message({
-                message: '手机号已重复！请重新输入！',
-                type: 'error'
-              })
-            } else {
-              _this.$message({
-                message: '更改失败',
-                type: 'error'
-              })
-            }
-          })
-        } else {
-          _this.$message({
-            message: '请确保全部字段符合规则！',
-            type: 'error'
-          })
-          return false
+            /* 设置input框前面文字长度 */
+            formLabelWidth: '180px'
         }
-      })
     },
+    // 判断是否登录 与 权限是否足够
+    beforeCreate() {
+        const _this = this
+        if (localStorage.getItem('role') === null) {
+            _this.$message({
+                message: '请先登录！',
+                type: 'error',
+                offset: '80'
+            })
+            _this.$router.push('/login')
+        } else {
+            if (localStorage.getItem('role') !== '1') {
+                _this.$message({
+                    message: '您的权限不足！',
+                    type: 'error',
+                    offset: '80'
+                })
+                _this.$router.push('/401')
+            }
+        }
+    },
+    created() {
+        const _this = this
+        this.$axios.get('http://localhost:8081/user/teacher/getAllTeachers/1').then(function (response) {
+            // console.log(response);
+            _this.pageSize = response.data.size
+            _this.teacherList = response.data.records
+            _this.total = response.data.total
+        }), function (err) {
+            console.log(err)
+        }
+    },
+    mounted() {
+        const formWidth = document.getElementById('formTable').style.width
+        document.getElementById('searchForm').style.width = formWidth
+    },
+    methods: {
+        // 查询老师
+        search() {
+            const _this = this
+            /* 当输入空值时，执行 查询全部并分页操作 */
+            if (_this.searchForm.realName === '') {
+                _this.$axios.get('http://localhost:8081/user/teacher/getAllTeachers/1').then(function (res) {
+                    // console.log(res);
+                    _this.pageSize = res.data.size
+                    _this.teacherList = res.data.records
+                    _this.total = res.data.total
+                })
+            } else {
+                this.$axios.post('http://localhost:8081/user/teacher/searchTeacher/1', _this.searchForm).then(function (res) {
+                    // console.log(response);
+                    _this.pageSize = res.data.size
+                    _this.teacherList = res.data.records
+                    _this.total = res.data.total
+                })
+            }
+        },
 
-    // 点击删除按钮取所选老师的 id 值
-    handleDelete (row) {
-      console.log(row.id)
-      this.form.id = row.id
-      this.form.account = row.account
-    },
-    // 点击确认删除
-    confirmDelete () {
-      const _this = this
-      this.$axios.post('http://localhost:8081/user/teacher/deleteTeacherById', _this.form).then(function (response) {
-        console.log(_this.form)
-        console.log(response)
-        window.location.reload()
-      })
-    },
+        // 点击编辑按钮弹出对话框内赋值
+        handleEdit(row) {
+            // console.log(row);
+            this.form.id = row.id
+            this.form.account = row.account
+            this.form.realName = row.realName
+            this.form.sex = row.sex
+            this.form.phone = row.phone
+        },
 
-    /* 翻页函数 */
-    changePage (currentPage) {
-      const _this = this
-      _this.$axios.post('http://localhost:8081/user/teacher/searchStudent/' + currentPage, _this.searchForm).then(function (response) {
-        console.log(_this.form)
-        _this.teacherList = response.data.records
-        _this.total = response.data.total
-      }, function (err) {
-        console.log(err)
-      })
-    },
+        // 修改→提交
+        submitForm(formName) {
+            const _this = this
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    _this.$axios.post('http://localhost:8081/user/teacher/updateTeacherInfo', _this.form).then(function (response) {
+                        console.log(response)
+                        if (response.data === 'success') {
+                            window.location.reload()
+                            _this.$message({
+                                message: '更改成功',
+                                type: 'success'
+                            })
+                            _this.dialogFormVisible = false
+                        } else if (response.data === 'phone_duplicate') {
+                            _this.$message({
+                                message: '手机号已重复！请重新输入！',
+                                type: 'error'
+                            })
+                        } else {
+                            _this.$message({
+                                message: '更改失败',
+                                type: 'error'
+                            })
+                        }
+                    })
+                } else {
+                    _this.$message({
+                        message: '请确保全部字段符合规则！',
+                        type: 'error'
+                    })
+                    return false
+                }
+            })
+        },
 
-    toDate (row, column, cellValue) {
-      return cellValue
-        ? moment(cellValue).format('YYYY-MM-DD')
-        : ''
+        // 点击删除按钮取所选老师的 id 值
+        handleDelete(row) {
+            console.log(row.id)
+            this.form.id = row.id
+            this.form.account = row.account
+        },
+        // 点击确认删除
+        confirmDelete() {
+            const _this = this
+            this.$axios.post('http://localhost:8081/user/teacher/deleteTeacherById', _this.form).then(function (response) {
+                console.log(_this.form)
+                console.log(response)
+                window.location.reload()
+            })
+        },
+
+        /* 翻页函数 */
+        changePage(currentPage) {
+            const _this = this
+            _this.$axios.post('http://localhost:8081/user/teacher/searchTeacher/' + currentPage, _this.searchForm).then(function (response) {
+                console.log(_this.form)
+                _this.teacherList = response.data.records
+                _this.total = response.data.total
+            }, function (err) {
+                console.log(err)
+            })
+        },
+
+        toDate(row, column, cellValue) {
+            return cellValue
+                ? moment(cellValue).format('YYYY-MM-DD')
+                : ''
+        }
     }
-  }
 
 }
 </script>

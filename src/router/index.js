@@ -21,6 +21,14 @@ import MyTeacher from '@/views/student/MyTeacher'
 import MyTask from '@/views/student/MyTask'
 
 /* teacher 页面 */
+import AddTask from "@/views/teacher/AddTask";
+import MyStudent from "@/views/teacher/MyStudent";
+import TaskClassify from "@/views/manager/TaskClassify";
+
+/* 错误页面 */
+import NotFount from "@/views/errorPage/404";
+import NoAccess from "@/views/errorPage/401";
+import OnlyStudent from "@/views/errorPage/403";
 
 Vue.use(VueRouter)
 
@@ -77,13 +85,43 @@ const routes = [
         component: MyTask
       },
       {
+        path: '/addTask',
+        name: '发布任务',
+        component: AddTask
+      },
+      {
+        path: '/myStudent',
+        name: '我的学生',
+        component: MyStudent
+      },
+      {
+        path: '/taskClassify',
+        name: '任务分类',
+        component: TaskClassify
+      },
+      {
         path: '/myInfo',
         name: '个人中心',
         component: MyInfo
-      }
+      },
+      {
+        path: '/404',
+        name: '404',
+        component: NotFount
+      },
+      {
+        path: '/401',
+        name: '401',
+        component: NoAccess
+      },
+      {
+        path: '/403',
+        name: '403',
+        component: OnlyStudent
+      },
+
     ]
   }
-
 ]
 
 const router = new VueRouter({

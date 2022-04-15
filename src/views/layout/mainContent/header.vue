@@ -30,8 +30,7 @@ export default {
       const _this = this
       this.screenLoading()
       setTimeout(() => {
-        localStorage.removeItem('account')
-        localStorage.removeItem('role')
+        localStorage.clear();
         _this.$router.push('/Login')
       }, 1000)
     },
@@ -59,7 +58,7 @@ export default {
 .el-header {
     position: sticky;
     top: 0;
-    z-index: 9999;
+    z-index: 1;
     background-color: #409eff;
     color: #333;
     text-align: center;

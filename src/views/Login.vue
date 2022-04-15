@@ -27,83 +27,84 @@
 <script>
 
 export default {
-  name: 'Login',
-  data () {
-    return {
-      loginForm: {
-        account: '',
-        password: ''
-        // code: '',
-        // token: ''
-      },
-      // captchaImg: '',
-      alert: false
-    }
-  },
-  methods: {
-    // getCaptcha() {
-    //     const _this = this;
-    //     this.$axios.get('http://localhost:8081/captcha').then(function (response) {
-    //         console.log(response);
-    //         _this.loginForm.token = response.data.data.key;
-    //         _this.captchaImg = response.data.data.captchaImg;
-    //     })
-    // },
-    toRegister () {
-      this.$router.push('/register')
-    },
-    login () {
-      const _this = this
-      this.screenLoading()
-      // 设置延时
-      setTimeout(() => {
-        if (_this.loginForm.account === '') {
-          _this.$message.error('账号不能为空！')
-        } else {
-          _this.$axios.post('http://localhost:8081/login', _this.loginForm).then(function (response) {
-            console.log(response)
-            if (response.data.msg === '认证成功') {
-              // 把 用户名 和 身份信息 存入 localStorage
-              localStorage.setItem('account', _this.loginForm.account)
-              localStorage.setItem('role', response.data.role)
-              _this.loginSuccess()
-              _this.$router.push('/home')
-            } else {
-              _this.loginError()
-            }
-          })
+    name: 'Login',
+    data() {
+        return {
+            loginForm: {
+                account: '',
+                password: ''
+                // code: '',
+                // token: ''
+            },
+            // captchaImg: '',
+            alert: false
         }
-      }, 1000)
     },
-    screenLoading () {
-      const loading = this.$loading({
-        lock: true,
-        text: '正在验证账号与密码，请稍等...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      })
-      setTimeout(() => {
-        loading.close()
-      }, 1000)
+    methods: {
+        // getCaptcha() {
+        //     const _this = this;
+        //     this.$axios.get('http://localhost:8081/captcha').then(function (response) {
+        //         console.log(response);
+        //         _this.loginForm.token = response.data.data.key;
+        //         _this.captchaImg = response.data.data.captchaImg;
+        //     })
+        // },
+        toRegister() {
+            this.$router.push('/register')
+        },
+        login() {
+            const _this = this
+            this.screenLoading()
+            // 设置延时
+            setTimeout(() => {
+                if (_this.loginForm.account === '') {
+                    _this.$message.error('账号不能为空！')
+                } else {
+                    _this.$axios.post('http://localhost:8081/login', _this.loginForm).then(function (response) {
+                        console.log(response)
+                        if (response.data.msg === '认证成功') {
+                            // 把 用户名 和 身份信息 存入 localStorage
+                            localStorage.setItem('account', _this.loginForm.account);
+                            localStorage.setItem('role', response.data.role);
+                            localStorage.setItem('sid', response.data.sid);
+                            localStorage.setItem('tid', response.data.tid);
+                            _this.loginSuccess()
+                            _this.$router.push('/home')
+                        } else {
+                            _this.loginError()
+                        }
+                    })
+                }
+            }, 1000);
+        },
+        screenLoading() {
+            const loading = this.$loading({
+                lock: true,
+                text: '正在验证账号与密码，请稍等...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            })
+            setTimeout(() => {
+                loading.close()
+            }, 1000)
+        },
+        loginSuccess() {
+            this.$message({
+                message: '登录成功！',
+                type: 'success',
+                offset: '80'
+            })
+        },
+        loginError() {
+            this.$message({
+                message: '登录失败！请检查您的账号或密码！',
+                type: 'error'
+            })
+        }
     },
-    loginSuccess () {
-      this.$message({
-        message: '登录成功！',
-        type: 'success',
-        offset: '80'
-      })
-    },
-    loginError () {
-      this.$message({
-        message: '登录失败！请检查您的账号或密码！',
-        type: 'error'
-      })
+    created() {
+        localStorage.clear();
     }
-  },
-  created () {
-    localStorage.removeItem('account')
-    localStorage.removeItem('role')
-  }
 }
 </script>
 
