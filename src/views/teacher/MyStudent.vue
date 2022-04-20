@@ -21,38 +21,49 @@
                     id="formTable"
                     :data="studentList"
                     border
-                    style="width: 90%;margin: 0 auto"
+                    style="width: 90%;margin: 0 auto;font-size: 16px"
                 >
+                    <el-table-column
+                        prop="avatarUrl"
+                        label="头像"
+                        width="196"
+                        align="center">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.avatarUrl" style="width: 50px;height: 50px;border-radius: 50%">
+                        </template>
+                    </el-table-column>
                     <el-table-column
                         prop="account"
                         label="账号"
                         align="center"
-                        width="170">
+                        width="190">
                     </el-table-column>
                     <el-table-column
                         prop="realName"
                         label="真实姓名"
                         align="center"
-                        width="150">
+                        sortable
+                        width="170">
                     </el-table-column>
                     <el-table-column
                         prop="sex"
                         label="性别"
                         align="center"
-                        width="120">
+                        width="150">
                     </el-table-column>
                     <el-table-column
                         prop="phone"
                         label="联系电话"
                         align="center"
-                        width="200">
+                        width="220">
                     </el-table-column>
                     <el-table-column
                         prop="birthDate"
                         :formatter="toDate"
                         label="出生日期"
                         align="center"
-                        width="150">
+                        sortable
+                        width="200">
                     </el-table-column>
                 </el-table>
             </div>
@@ -74,7 +85,7 @@ import moment from "moment";
 
 export default {
     name: "MyStudent",
-    data () {
+    data() {
         return {
             // 搜索框
             searchForm: {
@@ -90,13 +101,22 @@ export default {
     },
     beforeCreate() {
         const _this = this;
-        if (localStorage.getItem('role') !== '2'){
+        if (localStorage.getItem('role') === null) {
             _this.$message({
-                message: '老师才能进入此页面！',
+                message: '请先登录！',
                 type: 'error',
                 offset: '80'
             })
-            _this.$router.push('/403');
+            _this.$router.push('/login')
+        } else {
+            if (localStorage.getItem('role') !== '2') {
+                _this.$message({
+                    message: '老师才能进入此页面！',
+                    type: 'error',
+                    offset: '80'
+                })
+                _this.$router.push('/403');
+            }
         }
     },
     created() {
@@ -109,7 +129,7 @@ export default {
         })
     },
     methods: {
-        search () {
+        search() {
             const _this = this
             /* 当输入空值时，执行 查询全部并分页操作 */
             if (_this.searchForm.realName === '') {
@@ -130,7 +150,7 @@ export default {
         },
 
         /* 翻页函数 */
-        changePage (currentPage) {
+        changePage(currentPage) {
             const _this = this
             _this.$axios.post('http://localhost:8081/teacher/searchMyStudent/' + currentPage, _this.searchForm).then(function (response) {
                 console.log(_this.form)
@@ -141,7 +161,7 @@ export default {
             })
         },
 
-        toDate (row, column, cellValue) {
+        toDate(row, column, cellValue) {
             return cellValue
                 ? moment(cellValue).format('YYYY-MM-DD')
                 : ''
@@ -166,7 +186,7 @@ h1 {
 }
 
 .table {
-    height: 450px;
+
     margin: 20px 0 20px;
 }
 
@@ -188,7 +208,6 @@ h1 {
 
 .box-card {
     width: 95%;
-    height: 700px;
     position: absolute;
     left: 30px;
     top: 30px;

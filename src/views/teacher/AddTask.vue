@@ -4,7 +4,7 @@
             <h1>发布任务</h1>
             <el-form :rules="rules" ref="form" :model="form" label-width="200px" status-icon>
                 <el-form-item label="任务名称" prop="taskName">
-                    <el-input v-model="form.taskName"></el-input>
+                    <el-input v-model="form.taskName" @change="confirmName(form.taskName)"></el-input>
                 </el-form-item>
                 <el-form-item label="任务描述" prop="taskDes">
                     <el-input type="textarea" v-model="form.taskDes"></el-input>
@@ -77,10 +77,13 @@ export default {
                 priorityId: '',
                 startTime: '',
                 deadline: '',
+                account: localStorage.getItem('account')
             },
             taskType: [],
             taskStatus: [],
             priority: [],
+
+            isRepeat: '',
 
             rules: {
                 taskName: [
@@ -100,6 +103,22 @@ export default {
         }
     },
     methods: {
+
+        /**
+         * 判断任务名称是否已经存在
+         * @param name
+         */
+        confirmName(name) {
+            const _this = this
+            this.$axios.get('http://localhost:8081/addTask/confirm?taskName=' + name).then(function (response) {
+                if (response.data === 'error') {
+                    _this.$message.error('任务名称已存在！请重新输入！')
+                }
+                _this.isRepeat = response.data
+            }, function (err) {
+                alert(err)
+            })
+        },
         /**
          * 获取任务类型
          */
@@ -135,25 +154,29 @@ export default {
             console.log(_this.form);
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    _this.$axios.post('http://localhost:8081/addTask/submit', _this.form).then(function (response) {
-                        console.log(response);
-                        if (response.data.msg === 'success') {
-                            _this.$message({
-                                type: 'success',
-                                message: '添加成功！',
-                                offset: 80
-                            })
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 3000)
-                        } else if (response.data.msg === 'error') {
-                            _this.$message({
-                                type: 'error',
-                                message: '添加失败！',
-                                offset: 80
-                            })
-                        }
-                    })
+                    if (_this.isRepeat === 'success') {
+                        _this.$axios.post('http://localhost:8081/addTask/submit', _this.form).then(function (response) {
+                            console.log(response);
+                            if (response.data.msg === 'success') {
+                                _this.$message({
+                                    type: 'success',
+                                    message: '添加成功！',
+                                    offset: 80
+                                })
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 3000)
+                            } else if (response.data.msg === 'error') {
+                                _this.$message({
+                                    type: 'error',
+                                    message: '添加失败！',
+                                    offset: 80
+                                })
+                            }
+                        })
+                    } else {
+                        _this.$message.error('任务名称已存在！请重新输入！')
+                    }
                 } else {
                     return false;
                 }

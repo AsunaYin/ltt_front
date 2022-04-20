@@ -71,6 +71,10 @@
                             <i class="el-icon-document-checked"></i>
                             <span>发布任务</span>
                         </el-menu-item>
+                        <el-menu-item index="/tasks" style="padding: 0">
+                            <i class="el-icon-upload2"></i>
+                            <span>已发布的任务</span>
+                        </el-menu-item>
 
                     </el-menu-item-group>
                 </el-submenu>

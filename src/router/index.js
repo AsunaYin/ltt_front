@@ -14,6 +14,7 @@ import MyInfo from '@/views/MyInfo'
 /* manager 页面 */
 import StudentList from '@/views/manager/StudentList'
 import TeacherList from '@/views/manager/TeacherList'
+import TaskClassify from "@/views/manager/TaskClassify";
 
 /* student 页面 */
 import ChoseTeacher from '@/views/student/ChoseTeacher'
@@ -23,7 +24,7 @@ import MyTask from '@/views/student/MyTask'
 /* teacher 页面 */
 import AddTask from "@/views/teacher/AddTask";
 import MyStudent from "@/views/teacher/MyStudent";
-import TaskClassify from "@/views/manager/TaskClassify";
+import Tasks from "@/views/teacher/Tasks";
 
 /* 错误页面 */
 import NotFount from "@/views/errorPage/404";
@@ -70,6 +71,11 @@ const routes = [
         component: TeacherList
       },
       {
+        path: '/taskClassify',
+        name: '任务分类',
+        component: TaskClassify
+      },
+      {
         path: '/choseTeacher',
         name: '选择老师',
         component: ChoseTeacher
@@ -95,9 +101,9 @@ const routes = [
         component: MyStudent
       },
       {
-        path: '/taskClassify',
-        name: '任务分类',
-        component: TaskClassify
+        path: '/tasks',
+        name: '已发布的任务',
+        component: Tasks
       },
       {
         path: '/myInfo',
