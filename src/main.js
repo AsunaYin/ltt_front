@@ -5,9 +5,11 @@ import store from './store'
 
 import './plugins/element.js'
 import axios from 'axios'
+import * as echarts from 'echarts'
 
 // 全局配置
 Vue.prototype.$axios = axios
+Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 
 new Vue({

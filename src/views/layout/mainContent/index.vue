@@ -24,7 +24,7 @@ export default {
 <style scoped>
     .main_Content{
         position: relative;
-        float: left;
+        float: right;
         width: 85%;
         height: 100%;
     }

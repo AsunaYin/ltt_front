@@ -39,20 +39,21 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="起止日期">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="开始日期"
-                                        v-model="form.startTime"
-                                        value-format="yyyy-MM-dd"
-                                        style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="截至日期"
-                                        v-model="form.deadline"
-                                        value-format="yyyy-MM-dd"
-                                        style="width: 100%;"></el-date-picker>
-                    </el-col>
+                <el-form-item label="开始日期" prop="startTime">
+                    <el-date-picker type="date" placeholder="开始日期"
+                                    v-model="form.startTime"
+                                    value-format="yyyy-MM-dd"
+                                    style="width: 20%;">
+
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="截止日期" prop="deadline">
+                    <el-date-picker type="date" placeholder="截至日期"
+                                    v-model="form.deadline"
+                                    value-format="yyyy-MM-dd"
+                                    style="width: 20%;">
+
+                    </el-date-picker>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit('form')">立即创建</el-button>
@@ -66,7 +67,25 @@
 <script>
 export default {
     name: "AddTask",
-    data() {
+    data: function () {
+        /**
+         * 检验截止日期是否在开始日期之前
+         * @param rule
+         * @param value
+         * @param callback
+         */
+        const _this = this;
+        const validateDate = (rule, value, callback) => {
+            let startTime = _this.form.startTime;
+            let d1 = new Date(startTime);
+            let d2 = new Date(value);
+            console.log(startTime)
+            if (d1.getDate() > d2.getDate()) {
+                callback(new Error('截止日期不能在开始日期之前！'))
+            } else {
+                callback()
+            }
+        }
         return {
             form: {
                 id: null,
@@ -99,6 +118,13 @@ export default {
                 priorityId: [
                     {required: true, message: '请选择任务优先级！', trigger: blur}
                 ],
+                startTime: [
+                    {required: true, message: '请选择开始日期！', trigger: blur}
+                ],
+                deadline: [
+                    {required: true, message: '请选择截至日期！', trigger: blur},
+                    {validator: validateDate}
+                ]
             }
         }
     },

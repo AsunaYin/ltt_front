@@ -19,38 +19,39 @@
 </template>
 
 <script>
+
 export default {
-  data () {
-    return {
-      account: localStorage.getItem('account')
-    }
-  },
-  methods: {
-    logOut () {
-      const _this = this
-      this.screenLoading()
-      setTimeout(() => {
-        localStorage.clear();
-        _this.$router.push('/Login')
-      }, 1000)
+    data() {
+        return {
+            account: localStorage.getItem('account')
+        }
     },
-    screenLoading () {
-      const loading = this.$loading({
-        lock: true,
-        text: '正在退出...',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      })
-      setTimeout(() => {
-        loading.close()
-      }, 1000)
-    },
-    handleCommand (command) {
-      if (command === 'personalCenter') {
-        this.$router.push({ path: '/myInfo' })
-      }
+    methods: {
+        logOut() {
+            const _this = this
+            this.screenLoading()
+            setTimeout(() => {
+                localStorage.clear();
+                _this.$router.push('/Login')
+            }, 1000)
+        },
+        screenLoading() {
+            const loading = this.$loading({
+                lock: true,
+                text: '正在退出...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            })
+            setTimeout(() => {
+                loading.close()
+            }, 1000)
+        },
+        handleCommand(command) {
+            if (command === 'personalCenter') {
+                this.$router.push({path: '/myInfo'})
+            }
+        },
     }
-  }
 }
 </script>
 
@@ -58,13 +59,18 @@ export default {
 .el-header {
     position: sticky;
     top: 0;
-    z-index: 1;
-    background-color: #409eff;
-    color: #333;
+    z-index: 9999;
+    background-color: #409EFF;
+    color: #424040;
     text-align: center;
     line-height: 60px;
     width: 100%;
-    height: 70px;
+    border-bottom: #2c3e50 !important;
+}
+
+.user-name {
+    color: #3c3e41;
+    font-weight: 700;
 }
 
 a {

@@ -36,7 +36,7 @@
                         size="mini"
                         type="primary"
                         plain
-                        @click="centerDialogVisible = true, handleSure(scope.row)">选择
+                        @click="handleSure(scope.row)">选择
                     </el-button>
                 </template>
             </el-table-column>
@@ -54,6 +54,8 @@
         <!-- 选择按钮 弹出对话框 默认不可见-->
         <el-dialog title="确定选择此老师吗" :visible.sync="centerDialogVisible" width="30%" center>
             <span v-model="form">是否要选择“{{ form.realName }}”老师？</span>
+            <br>
+            <span>选择后需等待老师审核</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="centerDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="centerDialogVisible = false,confirmChose()">确 定</el-button>
@@ -144,17 +146,26 @@ export default {
             })
         },
         handleSure(row) {
-            this.form.realName = row.realName;
-            this.relationForm.tid = row.id;
+            if (localStorage.getItem('result') === '0'){
+                this.$message({
+                    message: '您已经选择了一位老师！请等待申请结果！',
+                    type: 'warning',
+                    offset: 80
+                })
+            } else {
+                this.centerDialogVisible = true;
+                this.form.realName = row.realName;
+                this.relationForm.tid = row.id;
+            }
         },
         confirmChose() {
             const _this = this;
             this.$axios.post('http://localhost:8081/student/ct/confirm/', _this.relationForm).then(function (response) {
-                if (response.data === 'success'){
-                    localStorage.setItem('tid',_this.relationForm.tid);
-                    _this.$router.push('/myTeacher');
+                console.log(response)
+                if (response.data.type === 'success'){
+                    localStorage.setItem('result',response.data.result);
                     _this.$message({
-                        message: '选择成功！',
+                        message: '选择成功！等待老师审核！',
                         type: 'success',
                         offset: 80
                     })

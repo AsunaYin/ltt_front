@@ -5,6 +5,9 @@
                 default-active="this.$router.path"
                 class="el-menu-vertical-demo"
                 :router="true"
+                background-color="#545c64"
+                text-color="#fff"
+                active-text-color="#ffd04b"
             >
                 <el-menu-item index="/home" style="padding: 0">
                     <i class="el-icon-star-off"></i>
@@ -63,6 +66,10 @@
                         <span slot="title">任务管理(老师)</span>
                     </template>
                     <el-menu-item-group>
+                        <el-menu-item index="/apply" style="padding: 0">
+                            <i class="el-icon-document-add"></i>
+                            <span>申请列表</span>
+                        </el-menu-item>
                         <el-menu-item index="/myStudent" style="padding: 0">
                             <i class="el-icon-s-check"></i>
                             <span>我的学生</span>
@@ -81,9 +88,19 @@
 
                 <!------------------------------------------------------------------------->
 
+                <el-menu-item index="/message" style="padding: 0">
+                    <i class="el-icon-chat-dot-square"></i>
+                    <span>消息中心</span>
+                </el-menu-item>
+
                 <el-menu-item index="/myInfo" style="padding: 0">
                     <i class="el-icon-setting"></i>
                     <span>个人中心</span>
+                </el-menu-item>
+
+                <el-menu-item index="/statistical" style="padding: 0">
+                    <i class="el-icon-discover"></i>
+                    <span>统计中心</span>
                 </el-menu-item>
 
             </el-menu>
@@ -101,7 +118,7 @@ export default {
 
 .sidebar {
     float: left;
-    position: sticky;
+    position: fixed;
     top: 0;
     width: 15%;
     height: 100%;

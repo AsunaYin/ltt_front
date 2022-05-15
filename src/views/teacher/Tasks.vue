@@ -20,7 +20,7 @@
                     id="formTable"
                     :data="taskList"
                     :cell-style="cellStyle"
-                    border
+                    stripe
                     style="width: 90%;margin: 0 auto;font-size: 16px"
                 >
                     <el-table-column
@@ -81,7 +81,7 @@
                         sortable
                         width="150">
                     </el-table-column>
-                    <el-table-column label="操作" align="center" fixed="right" width="260">
+                    <el-table-column label="操作" align="center" fixed="right" width="300">
                         <template slot-scope="scope">
                             <el-button
                                 size="mini" type="primary"
@@ -90,6 +90,10 @@
                             <el-button
                                 size="mini" type="primary"
                                 @click="acceptance(scope.row)">验收任务
+                            </el-button>
+                            <el-button
+                                size="mini" type="primary"
+                                @click="editTaskForm = true,editTask(scope.row)">编辑任务
                             </el-button>
                         </template>
                     </el-table-column>
@@ -113,6 +117,54 @@
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="studentFormVisible = false">取 消</el-button>
                     <el-button type="primary" @click="submitForm('studentForm')">确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <!-- 验收任务按钮 弹出对话框 默认不可见-->
+            <el-dialog title="验收当前任务" :visible.sync="acceptanceFormVisible">
+                <el-descriptions title="详细信息" :column="3" border>
+                    <el-descriptions-item label="任务名称">
+                        {{ taskInfo.taskName }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="任务描述">{{ taskInfo.taskDes }}</el-descriptions-item>
+                    <el-descriptions-item label="学生姓名">{{ taskInfo.realName }}</el-descriptions-item>
+                    <el-descriptions-item label="所属老师">{{ taskInfo.teacherName }}</el-descriptions-item>
+                    <el-descriptions-item label="任务类型">{{ taskInfo.typeName }}</el-descriptions-item>
+                    <el-descriptions-item label="任务状态">{{ taskInfo.status }}</el-descriptions-item>
+                    <el-descriptions-item label="优先级">{{ taskInfo.priority }}</el-descriptions-item>
+                    <el-descriptions-item label="开始日期" content-style="background:#c5efd6">{{ taskInfo.startTime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="截至日期" content-style="background:#c5efd6">{{ taskInfo.deadline }}
+                    </el-descriptions-item>
+                </el-descriptions>
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="acceptanceFormVisible = false">取 消</el-button>
+                    <el-button type="danger" @click="fail">不 通 过</el-button>
+                    <el-button type="success" @click="success">通 过</el-button>
+                </div>
+            </el-dialog>
+
+            <!-- 编辑任务按钮 弹出对话框 默认不可见-->
+            <el-dialog title="编辑当前任务" :visible.sync="editTaskForm">
+                <el-form :model="taskForm" ref="taskForm" :rules="rules">
+                    <el-form-item label="更改任务描述" prop="taskDes">
+                        <el-input type="textarea" v-model="taskForm.taskDes"></el-input>
+                    </el-form-item>
+                    <el-form-item label="更改优先级" prop="priorityId">
+                        <el-select v-model="taskForm.priorityId" clearable placeholder="请选择优先级" @focus="getPriority">
+                            <el-option
+                                v-for="item in priority"
+                                :key="item.id"
+                                :label="item.priority"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="editTaskForm = false">取 消</el-button>
+                    <el-button type="primary" @click="submitEditForm('taskForm')">确 定</el-button>
                 </div>
             </el-dialog>
 
@@ -155,12 +207,39 @@ export default {
                 realName: ''
             },
             rules: {
-                sid: [
+                realName: [
                     {required: true, message: '请选择学生！', trigger: blur}
+                ],
+                priorityId: [
+                    {required: true, message: '请选择优先级！', trigger: blur}
+                ],
+                taskName: [
+                    {required: true, message: '请输入任务名！', trigger: blur}
                 ]
             },
             student: [],
-            formLabelWidth: '180px'
+            formLabelWidth: '180px',
+
+            acceptanceFormVisible: false,
+            taskInfo: {
+                realName: '',
+                taskName: '',
+                taskDes: '',
+                status: '',
+                typeName: '',
+                priority: '',
+                teacherName: '',
+                startTime: '',
+                deadline: ''
+            },
+
+            editTaskForm: false,
+            taskForm: {
+                taskName: '',
+                taskDes: '',
+                priorityId: '',
+            },
+            priority: []
         }
     },
     beforeCreate() {
@@ -302,20 +381,131 @@ export default {
          * @param row
          */
         acceptance(row) {
+            const _this = this;
+            if (row.realName === '该任务尚未分配给学生！') {
+                _this.$message({
+                    message: '该任务还没有被分配！',
+                    type: 'warning',
+                    offset: 80
+                })
+            } else if (row.status !== '待审核') {
+                _this.$message({
+                    message: '该任务还未到达审核阶段！',
+                    type: 'warning',
+                    offset: 80
+                })
+            } else {
+                this.acceptanceFormVisible = true;
+                this.$axios.get('http://localhost:8081/myTask/getTeacher?taskName=' + row.taskName).then(function (response) {
+                    _this.taskInfo.teacherName = response.data;
+                    _this.taskInfo.realName = row.realName;
+                    _this.taskInfo.taskName = row.taskName;
+                    _this.taskInfo.taskDes = row.taskDes;
+                    _this.taskInfo.status = row.status;
+                    _this.taskInfo.typeName = row.typename;
+                    _this.taskInfo.priority = row.priority;
+                    _this.taskInfo.startTime = row.startTime;
+                    _this.taskInfo.deadline = row.deadline;
+                })
+            }
+        },
 
+        success() {
+            const _this = this;
+            this.$axios.post('http://localhost:8081/tasks/success', _this.taskInfo).then(function (response) {
+                console.log(response);
+                if (response.data === 'success') {
+                    _this.$message({
+                        message: '验收完成！已通过！',
+                        type: 'success',
+                        offset: 80
+                    })
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    _this.$message({
+                        message: '验收失败！请重试！',
+                        type: 'error',
+                        offset: 80
+                    })
+                }
+            })
+        },
+
+        fail() {
+            const _this = this;
+            this.$axios.post('http://localhost:8081/tasks/fail', _this.taskInfo).then(function (response) {
+                console.log(response);
+                if (response.data === 'success') {
+                    _this.$message({
+                        message: '验收完成！未通过！',
+                        type: 'success',
+                        offset: 80
+                    })
+                } else {
+                    _this.$message({
+                        message: '验收失败！请重试！',
+                        type: 'error',
+                        offset: 80
+                    })
+                }
+            })
+        },
+
+        /**
+         * 获取任务优先级
+         */
+        getPriority() {
+            const _this = this;
+            this.$axios.get('http://localhost:8081/addTask/getPriority').then(function (response) {
+                _this.priority = response.data;
+            })
+        },
+        /**
+         * 编辑任务
+         */
+        editTask(row) {
+            const _this = this;
+            this.$axios.get('http://localhost:8081/myTask/getTeacher?taskName=' + row.taskName).then(function (response) {
+                _this.taskForm.taskName = row.taskName;
+                _this.taskForm.taskDes = row.taskDes;
+                _this.taskForm.priorityId = row.priority;
+            })
+        },
+        submitEditForm(formName) {
+            const _this = this;
+            this.$refs[formName].validate((valid) => {
+                if (valid){
+                    _this.$axios.post('http://localhost:8081/tasks/editTask', _this.taskForm).then(response =>{
+                        if (response.data === 'success'){
+                            _this.$message({
+                                type: 'success',
+                                message: '更改成功！',
+                                offset: 80
+                            });
+                            _this.editTaskForm = false;
+                        }
+                    })
+                }else {
+                    return false;
+                }
+            });
         },
 
         cellStyle({row, column, rowIndex, columnIndex}) {
             const _this = this;
-            let localDate = new Date().toLocaleDateString();
             // 状态列字体颜色
             if (row.realName === '该任务尚未分配给学生！' && columnIndex == 1) {
                 return {color: '#EA0000'};
-            } else {
-                return {color: '#1a1a1b'};
+            }
+            if (row.status === '已完成' && columnIndex == 4) {
+                return {color: '#64e11a'}
+            }
+            if (row.status === '未通过' && columnIndex == 4) {
+                return {color: '#f53434'}
             }
         },
-
 
         toDate(row, column, cellValue) {
             return cellValue
@@ -332,8 +522,7 @@ export default {
                 return formatDate2;
             }
         }
-
-    }
+    },
 }
 </script>
 
@@ -385,6 +574,6 @@ h1 {
 }
 
 .testColor {
-    color: #ea0000;
+    color: #509ff8;
 }
 </style>

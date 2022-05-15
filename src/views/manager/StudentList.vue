@@ -3,7 +3,7 @@
         <el-card class="box-card">
             <h1>学生列表</h1>
             <el-form :inline="true" :model="searchForm" class="demo-form-inline" id="searchForm">
-                <el-form-item label="查询学生" style="float: left">
+                <el-form-item label="查询学生：" style="float: left">
                     <el-input v-model="searchForm.realName" placeholder="请输入真实姓名"></el-input>
                 </el-form-item>
                 <el-form-item style="float: left">
@@ -20,9 +20,17 @@
                 <el-table
                     id="formTable"
                     :data="studentList"
-                    border
+                    stripe
                     style="width: 90%;margin: 0 auto"
                 >
+                    <el-table-column
+                        type="index"
+                        label="序号"
+                        :index="indexMethod"
+                        width="50"
+                        align="center"
+                        fixed="left">
+                    </el-table-column>
                     <el-table-column
                         prop="account"
                         label="账号"
@@ -32,14 +40,16 @@
                     <el-table-column
                         prop="realName"
                         label="真实姓名"
+                        sortable
                         align="center"
                         width="150">
                     </el-table-column>
                     <el-table-column
                         prop="sex"
                         label="性别"
+                        sortable
                         align="center"
-                        width="120">
+                        width="100">
                     </el-table-column>
                     <el-table-column
                         prop="phone"
@@ -51,6 +61,7 @@
                         prop="birthDate"
                         :formatter="toDate"
                         label="出生日期"
+                        sortable
                         align="center"
                         width="150">
                     </el-table-column>
@@ -61,7 +72,7 @@
                         align="center"
                         width="150">
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" fixed="right" width="200">
                         <template slot-scope="scope">
                             <el-button
                                 size="mini"
@@ -139,6 +150,7 @@ export default {
             studentList: [],
             total: 0,
             pageSize: null,
+            currentPage: null,
 
             // 校验规则
             rules: {
@@ -197,6 +209,7 @@ export default {
             _this.pageSize = response.data.size
             _this.studentList = response.data.records
             _this.total = response.data.total
+            _this.currentPage = response.data.current;
         }), function (err) {
             console.log(err)
         }
@@ -206,6 +219,10 @@ export default {
         document.getElementById('searchForm').style.width = formWidth
     },
     methods: {
+        indexMethod(index) {
+            index = (index + 1) + (this.currentPage - 1) * this.pageSize;
+            return index
+        },
         // 查询学生
         search() {
             const _this = this
@@ -216,6 +233,7 @@ export default {
                     _this.pageSize = res.data.size
                     _this.studentList = res.data.records
                     _this.total = res.data.total
+                    _this.currentPage = response.data.current;
                 })
             } else {
                 _this.$axios.post('http://localhost:8081/user/student/searchStudent/1', _this.searchForm).then(function (res) {
@@ -223,6 +241,7 @@ export default {
                     _this.pageSize = res.data.size
                     _this.studentList = res.data.records
                     _this.total = res.data.total
+                    _this.currentPage = response.data.current;
                 })
             }
         },
@@ -242,7 +261,6 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     _this.$axios.post('http://localhost:8081/user/student/updateStudentInfo', _this.form).then(function (response) {
-                        console.log(response)
                         if (response.data === 'success') {
                             window.location.reload()
                             _this.$message({
@@ -296,6 +314,7 @@ export default {
             _this.$axios.post('http://localhost:8081/user/student/searchStudent/' + currentPage, _this.searchForm).then(function (response) {
                 _this.studentList = response.data.records
                 _this.total = response.data.total
+                _this.currentPage = response.data.current;
             }, function (err) {
                 console.log(err)
             })

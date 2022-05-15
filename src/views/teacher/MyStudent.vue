@@ -20,7 +20,7 @@
                 <el-table
                     id="formTable"
                     :data="studentList"
-                    border
+                    stripe
                     style="width: 90%;margin: 0 auto;font-size: 16px"
                 >
                     <el-table-column

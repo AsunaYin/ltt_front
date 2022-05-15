@@ -9,7 +9,8 @@ export default {}
 </script>
 
 <style scoped>
-    .content {
-
-    }
+.content {
+    position: relative;
+    background-color: #ffffff;
+}
 </style>

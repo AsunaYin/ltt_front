@@ -11,6 +11,12 @@ import Home from '@/views/Home'
 /* 个人中心 */
 import MyInfo from '@/views/MyInfo'
 
+/* 消息中心 */
+import Message from "@/views/Message";
+
+/* 统计中心 */
+import statistical from "@/views/Statistical";
+
 /* manager 页面 */
 import StudentList from '@/views/manager/StudentList'
 import TeacherList from '@/views/manager/TeacherList'
@@ -25,6 +31,7 @@ import MyTask from '@/views/student/MyTask'
 import AddTask from "@/views/teacher/AddTask";
 import MyStudent from "@/views/teacher/MyStudent";
 import Tasks from "@/views/teacher/Tasks";
+import Apply from "@/views/teacher/Apply";
 
 /* 错误页面 */
 import NotFount from "@/views/errorPage/404";
@@ -96,6 +103,11 @@ const routes = [
         component: AddTask
       },
       {
+        path: '/apply',
+        name: '收到的申请',
+        component: Apply
+      },
+      {
         path: '/myStudent',
         name: '我的学生',
         component: MyStudent
@@ -109,6 +121,16 @@ const routes = [
         path: '/myInfo',
         name: '个人中心',
         component: MyInfo
+      },
+      {
+        path: '/message',
+        name: '消息中心',
+        component: Message
+      },
+      {
+        path: '/statistical',
+        name: '统计中心',
+        component: statistical
       },
       {
         path: '/404',

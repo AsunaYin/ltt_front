@@ -43,20 +43,21 @@
 <script>
 export default {
     name: 'MyTeacher',
-    data(){
-        return{
+    data() {
+        return {
             avatarUrl: '',
             realName: '',
             sex: '',
             phone: '',
             birthDate: '',
 
+            account: localStorage.getItem('account'),
             tid: localStorage.getItem('tid')
 
         }
     },
     beforeCreate() {
-        const _this = this
+        const _this = this;
         if (localStorage.getItem('role') === null) {
             _this.$message({
                 message: '请先登录！',
@@ -64,36 +65,66 @@ export default {
                 offset: '80'
             })
             _this.$router.push('/login');
-        } else if (localStorage.getItem('role') !== '3'){
+        } else if (localStorage.getItem('role') !== '3') {
             _this.$message({
                 message: '您不是学生！',
                 type: 'error',
                 offset: '80'
             })
             _this.$router.push('/403');
-        } else {
-            if (localStorage.getItem('tid') === null){
+        }
+
+    },
+    created() {
+        const _this = this;
+        _this.getTid();
+    },
+    methods: {
+        getTid() {
+            const _this = this;
+            this.$axios.get('http://localhost:8081/student/getTid?account=' + _this.account).then(response => {
+                _this.tid = response.data;
+                console.log("getTid----" + _this.tid);
+            }).then(function (){
+                console.log("getT----" + _this.tid);
+                if (_this.tid === 'null' || _this.tid === '') {
+                    _this.$message({
+                        message: '请先选择老师！',
+                        type: 'warning',
+                        offset: '80'
+                    })
+                    _this.$router.push('/choseTeacher');
+                } else {
+                    _this.$axios.get('http://localhost:8081/student/myTeacher?tid=' + _this.tid).then(function (response) {
+                        _this.avatarUrl = response.data.avatarUrl;
+                        _this.realName = response.data.realName;
+                        _this.sex = response.data.sex;
+                        _this.phone = response.data.phone;
+                        _this.birthDate = response.data.birthDate;
+                    })
+                }
+            })
+        },
+        getTeacherInfo() {
+            const _this = this;
+            console.log("getT----" + _this.tid);
+            if (_this.tid === 'null') {
                 _this.$message({
                     message: '请先选择老师！',
                     type: 'warning',
                     offset: '80'
                 })
                 _this.$router.push('/choseTeacher');
+            } else {
+                _this.$axios.get('http://localhost:8081/student/myTeacher?tid=' + _this.tid).then(function (response) {
+                    _this.avatarUrl = response.data.avatarUrl;
+                    _this.realName = response.data.realName;
+                    _this.sex = response.data.sex;
+                    _this.phone = response.data.phone;
+                    _this.birthDate = response.data.birthDate;
+                })
             }
         }
-    },
-    created() {
-        const _this = this;
-        this.$axios.get('http://localhost:8081/student/myTeacher?tid=' + _this.tid).then(function (response) {
-            _this.avatarUrl = response.data.avatarUrl;
-            _this.realName = response.data.realName;
-            _this.sex = response.data.sex;
-            _this.phone = response.data.phone;
-            _this.birthDate = response.data.birthDate;
-        })
-    },
-    methods: {
-
     }
 }
 </script>
@@ -104,6 +135,7 @@ export default {
     padding: 0;
     margin: 0;
 }
+
 .title {
     position: relative;
     height: 40px;
@@ -112,6 +144,7 @@ export default {
     line-height: 40px;
     background-color: #f6f6f6;
 }
+
 .title h4 {
     position: absolute;
     left: 15px;
@@ -128,14 +161,14 @@ export default {
     position: absolute;
     left: 150px;
     top: 100px;
-    width:150px;
-    height:150px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
 }
 
 .avatar_image {
-    width:150px;
-    height:150px;
+    width: 150px;
+    height: 150px;
 }
 
 .avatar-font {
@@ -155,7 +188,7 @@ export default {
     margin-bottom: 20px;
 }
 
-.el-row:last-child{
+.el-row:last-child {
     margin-bottom: 0;
 }
 
