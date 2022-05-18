@@ -1,15 +1,23 @@
 <template>
     <div class="content">
-        <el-tabs type="border-card" class="tabs" @tab-click="handleClick">
-            <el-tab-pane label="我接收的消息">
-                <div class="infinite-list-wrapper" style="overflow:auto;height: 600px">
+        <el-tabs type="border-card" class="tabs" @tab-click="handleClick" v-model="activeName">
+            <el-tab-pane label="我接收的消息" name="receive">
+                <div v-if="noMessage">暂无消息</div>
+                <div v-else class="infinite-list-wrapper" style="overflow:auto;height: 600px">
                     <ul>
                         <li v-for="message in messages" class="list-item">
                             <el-descriptions column="2" :colon=false>
-                                {{message}}
                                 <el-descriptions-item label="来自:">{{message.realName}}</el-descriptions-item>
                                 <el-descriptions-item label="">{{toDate(message.sendTime)}}</el-descriptions-item>
                                 <el-descriptions-item label="">{{message.information}}</el-descriptions-item>
+                                <el-descriptions-item label="">
+                                    <el-button
+                                        type="primary"
+                                        icon="el-icon-edit"
+                                        circle
+                                        @click="toSendPage(message.realName)">
+                                    </el-button>
+                                </el-descriptions-item>
                             </el-descriptions>
                             <hr>
                         </li>
@@ -18,8 +26,9 @@
             </el-tab-pane>
 
 
-            <el-tab-pane label="我发送的消息">
-                <div class="infinite-list-wrapper" style="overflow:auto;height: 600px">
+            <el-tab-pane label="我发送的消息" name="send">
+                <div v-if="noMessage">暂无消息</div>
+                <div v-else class="infinite-list-wrapper" style="overflow:auto;height: 600px">
                     <ul>
                         <li v-for="message in messages" class="list-item">
                             <el-descriptions column="2" :colon=false>
@@ -34,7 +43,7 @@
             </el-tab-pane>
 
 
-            <el-tab-pane label="发送新消息">
+            <el-tab-pane label="发送新消息" name="sendNew">
                 <el-form :model="contentForm" :rules="rules" ref="contentForm"
                          label-width="250px" class="demo-ruleForm">
                     <el-form-item label="消息内容" prop="information">
@@ -51,7 +60,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="submitForm('contentForm')">立即创建</el-button>
+                        <el-button type="primary" @click="submitForm('contentForm')">发送</el-button>
                         <el-button @click="resetForm('contentForm')">重置</el-button>
                     </el-form-item>
                 </el-form>
@@ -68,6 +77,7 @@ export default {
     name: "Message",
     data() {
         return {
+            activeName: 'receive',
             messages: [],
             tabPosition: 'left',
             account: localStorage.getItem('account'),
@@ -79,6 +89,7 @@ export default {
                 role: localStorage.getItem('role')
             },
             receivers: [],
+            noMessage: true,
             role: localStorage.getItem('role'),
             rules: {
                 information: [
@@ -124,8 +135,22 @@ export default {
             const _this = this;
             this.$axios.get('http://localhost:8081/message/getReceiveMessage?receiveAccount=' + _this.account + '&role=' + _this.role).then(response =>{
                 _this.messages = response.data;
+                if (response.data.length !== 0){
+                    _this.noMessage = false;
+                } else {
+                    _this.noMessage = true;
+                }
             })
         },
+
+        /**
+         * 去发送信息页面
+         */
+        toSendPage(receiveName){
+            this.activeName = 'sendNew';
+            this.contentForm.receiver = receiveName;
+        },
+
         /**
          * 获取我发送的消息
          */
@@ -133,6 +158,11 @@ export default {
             const _this = this;
             this.$axios.get('http://localhost:8081/message/getSendMessage?sendAccount=' + _this.account + '&role=' + _this.role).then(response =>{
                 _this.messages = response.data;
+                if (response.data.length !== 0){
+                    _this.noMessage = false;
+                } else {
+                    _this.noMessage = true;
+                }
             })
         },
 

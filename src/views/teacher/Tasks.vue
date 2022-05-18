@@ -19,16 +19,23 @@
                 <el-table
                     id="formTable"
                     :data="taskList"
-                    :cell-style="cellStyle"
                     stripe
                     style="width: 90%;margin: 0 auto;font-size: 16px"
                 >
+                    <el-table-column
+                        type="index"
+                        label="序号"
+                        :index="indexMethod"
+                        width="50"
+                        align="center"
+                        fixed="left">
+                    </el-table-column>
                     <el-table-column
                         fixed
                         prop="taskName"
                         label="任务名称"
                         align="center"
-                        width="170">
+                        width="200">
                     </el-table-column>
                     <el-table-column
                         id="student"
@@ -36,7 +43,15 @@
                         label="学生"
                         align="center"
                         sortable
-                        width="150">
+                        width="200">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.realName === null" slot="reference" class="name-wrapper">
+                                <el-tag type="danger">未分配给学生！</el-tag>
+                            </div>
+                            <div v-else>
+                                {{scope.row.realName}}
+                            </div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="taskDes"
@@ -50,20 +65,39 @@
                         align="center"
                         sortable
                         width="120">
+                        <template slot-scope="scope">
+                            <div slot="reference" class="name-wrapper">
+                                <el-tag>{{ scope.row.typename }}</el-tag>
+                            </div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="status"
                         label="任务状态"
                         align="center"
                         sortable
-                        width="100">
+                        width="120">
+                        <template slot-scope="scope">
+                            <div slot="reference" class="name-wrapper">
+                                <el-tag :type="scope.row.status === '未开始' ? 'info' : scope.row.status === '已开始' ? 'primary' : scope.row.status === '待审核' ? 'warning' : scope.row.status === '已完成' ? 'success' : 'danger'">
+                                    {{ scope.row.status }}
+                                </el-tag>
+                            </div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="priority"
                         label="任务优先级"
                         align="center"
                         sortable
-                        width="100">
+                        width="130">
+                        <template slot-scope="scope">
+                            <div slot="reference" class="name-wrapper">
+                                <el-tag :type="scope.row.priority === '低' ? 'info' : scope.row.priority === '中' ? 'warning' : 'danger'">
+                                    {{ scope.row.priority }}
+                                </el-tag>
+                            </div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                         prop="startTime"
@@ -129,9 +163,21 @@
                     <el-descriptions-item label="任务描述">{{ taskInfo.taskDes }}</el-descriptions-item>
                     <el-descriptions-item label="学生姓名">{{ taskInfo.realName }}</el-descriptions-item>
                     <el-descriptions-item label="所属老师">{{ taskInfo.teacherName }}</el-descriptions-item>
-                    <el-descriptions-item label="任务类型">{{ taskInfo.typeName }}</el-descriptions-item>
-                    <el-descriptions-item label="任务状态">{{ taskInfo.status }}</el-descriptions-item>
-                    <el-descriptions-item label="优先级">{{ taskInfo.priority }}</el-descriptions-item>
+                    <el-descriptions-item label="任务类型">
+                        <el-tag>{{ taskInfo.typeName }}</el-tag>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="任务状态">
+                        <el-tag
+                            :type="taskInfo.status === '未开始' ? 'info' : taskInfo.status === '已开始' ? 'primary' : taskInfo.status === '待审核' ? 'warning' : taskInfo.status === '已完成' ? 'success' : 'danger'">
+                            {{ taskInfo.status }}
+                        </el-tag>
+                    </el-descriptions-item>
+                    <el-descriptions-item label="优先级">
+                        <el-tag
+                            :type="taskInfo.priority === '低' ? 'info' : taskInfo.priority === '中' ? 'warning' : 'danger'">
+                            {{ taskInfo.priority }}
+                        </el-tag>
+                    </el-descriptions-item>
                     <el-descriptions-item label="开始日期" content-style="background:#c5efd6">{{ taskInfo.startTime }}
                     </el-descriptions-item>
                     <el-descriptions-item label="截至日期" content-style="background:#c5efd6">{{ taskInfo.deadline }}
@@ -196,6 +242,7 @@ export default {
             taskList: [],
             total: 0,
             pageSize: null,
+            currentPage: null,
 
             tid: localStorage.getItem('tid'),
             account: localStorage.getItem('account'),
@@ -268,14 +315,15 @@ export default {
             _this.taskList = response.data.records;
             _this.pageSize = response.data.size;
             _this.total = response.data.total;
-            for (let i = 0; i < _this.taskList.length; i++) {
-                if (_this.taskList[i].realName === null) {
-                    _this.taskList[i].realName = "该任务尚未分配给学生！";
-                }
-            }
+            _this.currentPage = response.data.current;
+
         })
     },
     methods: {
+        indexMethod(index) {
+            index = (index + 1) + (this.currentPage - 1) * this.pageSize;
+            return index
+        },
         search() {
             const _this = this
             /* 当输入空值时，执行 查询全部并分页操作 */
@@ -284,12 +332,8 @@ export default {
                     _this.pageSize = res.data.size;
                     _this.taskList = res.data.records;
                     _this.total = res.data.total;
-                    for (let i = 0; i < _this.taskList.length; i++) {
-                        console.log(_this.taskList[i].realName);
-                        if (_this.taskList[i].realName === null) {
-                            _this.taskList[i].realName = "该任务尚未分配给学生！";
-                        }
-                    }
+                    _this.currentPage = response.data.current;
+
                 })
             } else {
                 _this.$axios.post('http://localhost:8081/tasks/searchTask/1', _this.searchForm).then(function (res) {
@@ -297,12 +341,8 @@ export default {
                     _this.pageSize = res.data.size;
                     _this.taskList = res.data.records;
                     _this.total = res.data.total;
-                    for (let i = 0; i < _this.taskList.length; i++) {
-                        console.log(_this.taskList[i].realName);
-                        if (_this.taskList[i].realName === null) {
-                            _this.taskList[i].realName = "该任务尚未分配给学生！";
-                        }
-                    }
+                    _this.currentPage = response.data.current;
+
                 })
             }
         },
@@ -313,12 +353,7 @@ export default {
             _this.$axios.post('http://localhost:8081/tasks/searchTask/' + currentPage, _this.searchForm).then(function (response) {
                 _this.taskList = response.data.records;
                 _this.total = response.data.total;
-                for (let i = 0; i < _this.taskList.length; i++) {
-                    console.log(_this.taskList[i].realName);
-                    if (_this.taskList[i].realName === null) {
-                        _this.taskList[i].realName = "该任务尚未分配给学生！";
-                    }
-                }
+                _this.currentPage = response.data.current;
             }, function (err) {
                 console.log(err)
             })
@@ -327,7 +362,7 @@ export default {
         addStudent(row) {
             const _this = this;
             console.log(row);
-            if (row.realName !== '该任务尚未分配给学生！') {
+            if (row.realName !== null) {
                 _this.$message({
                     message: '此任务已被分配！',
                     type: 'warning',
@@ -382,7 +417,7 @@ export default {
          */
         acceptance(row) {
             const _this = this;
-            if (row.realName === '该任务尚未分配给学生！') {
+            if (row.realName === null) {
                 _this.$message({
                     message: '该任务还没有被分配！',
                     type: 'warning',
@@ -476,9 +511,9 @@ export default {
         submitEditForm(formName) {
             const _this = this;
             this.$refs[formName].validate((valid) => {
-                if (valid){
-                    _this.$axios.post('http://localhost:8081/tasks/editTask', _this.taskForm).then(response =>{
-                        if (response.data === 'success'){
+                if (valid) {
+                    _this.$axios.post('http://localhost:8081/tasks/editTask', _this.taskForm).then(response => {
+                        if (response.data === 'success') {
                             _this.$message({
                                 type: 'success',
                                 message: '更改成功！',
@@ -487,24 +522,10 @@ export default {
                             _this.editTaskForm = false;
                         }
                     })
-                }else {
+                } else {
                     return false;
                 }
             });
-        },
-
-        cellStyle({row, column, rowIndex, columnIndex}) {
-            const _this = this;
-            // 状态列字体颜色
-            if (row.realName === '该任务尚未分配给学生！' && columnIndex == 1) {
-                return {color: '#EA0000'};
-            }
-            if (row.status === '已完成' && columnIndex == 4) {
-                return {color: '#64e11a'}
-            }
-            if (row.status === '未通过' && columnIndex == 4) {
-                return {color: '#f53434'}
-            }
         },
 
         toDate(row, column, cellValue) {
@@ -513,15 +534,6 @@ export default {
                 : ''
         },
 
-        compareDate(dateTime1, dateTime2) {
-            let formatDate1 = new Date(dateTime1);
-            let formatDate2 = new Date(dateTime2);
-            if (formatDate1 > formatDate2) {
-                return formatDate1;
-            } else {
-                return formatDate2;
-            }
-        }
     },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <el-header>
+    <el-header class="el-header">
         <h1 style="display: inline-block;float: left;margin:0 0 0 450px;">欢迎来到学习任务跟踪管理系统</h1>
         <div class="aside__top--right" style="display: inline-block;float: right;margin-right: 20px;width: 20%">
             <div class="user-msg" style="display: inline-block;float: left;">

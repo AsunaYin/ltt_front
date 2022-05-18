@@ -7,33 +7,45 @@
             </div>
             <div class="avatar-font">头像</div>
             <el-card class="box-card">
-                <el-row :gutter="20">
-                    <el-col :span="6" class="bgc">
-                        <div style="text-align:right;"><span>姓名：</span></div>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <span>{{ realName }}</span>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <div style="text-align:right;"><span>性别：</span></div>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <span>{{ sex }}</span>
-                    </el-col>
+                <el-row>
+                    <span style="color: #8c939d;font-size: 25px">个人信息</span>
+                    <hr>
                 </el-row>
-                <el-row :gutter="20">
-                    <el-col :span="6" class="bgc">
-                        <div style="text-align:right;"><span>联系电话：</span></div>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <span>{{ phone }}</span>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <div style="text-align:right;"><span>出生日期：</span></div>
-                    </el-col>
-                    <el-col :span="6" class="bgc">
-                        <span>{{ birthDate }}</span>
-                    </el-col>
+                <el-row>
+                    <div style="display: inline-block;text-align: left;width: 50%">
+                        <span style="font-size: 20px"><i class="el-icon-user-solid"></i>老师姓名</span>
+                    </div>
+                    <div style="display: inline-block;text-align: right;width: 50%">
+                        <span style="font-size: 20px">{{realName}}</span>
+                    </div>
+                    <hr>
+                </el-row>
+                <el-row>
+                    <div style="display: inline-block;text-align: left;width: 50%;">
+                        <span style="font-size: 20px"><i class="el-icon-s-opportunity"></i>性别</span>
+                    </div>
+                    <div style="display: inline-block;text-align: right;width: 50%">
+                        <span style="font-size: 20px">{{sex}}</span>
+                    </div>
+                    <hr>
+                </el-row>
+                <el-row>
+                    <div style="display: inline-block;text-align: left;width: 50%;">
+                        <span style="font-size: 20px"><i class="el-icon-mobile-phone"></i>联系电话</span>
+                    </div>
+                    <div style="display: inline-block;text-align: right;width: 50%">
+                        <span style="font-size: 20px">{{phone}}</span>
+                    </div>
+                    <hr>
+                </el-row>
+                <el-row>
+                    <div style="display: inline-block;text-align: left;width: 50%;">
+                        <span style="font-size: 20px"><i class="el-icon-ice-cream"></i>出生日期</span>
+                    </div>
+                    <div style="display: inline-block;text-align: right;width: 50%">
+                        <span style="font-size: 20px">{{birthDate}}</span>
+                    </div>
+                    <hr>
                 </el-row>
             </el-card>
         </div>
@@ -159,23 +171,24 @@ export default {
     /*display: inline-block;*/
     overflow: hidden;
     position: absolute;
-    left: 150px;
+    left: 100px;
     top: 100px;
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
 }
 
 .avatar_image {
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 300px;
 }
 
 .avatar-font {
     position: absolute;
-    left: 210px;
-    top: 270px;
+    left: 230px;
+    top: 430px;
     font-weight: 800;
+    font-size: 30px;
 }
 
 .box-card {

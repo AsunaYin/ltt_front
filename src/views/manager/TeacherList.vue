@@ -20,9 +20,17 @@
                 <el-table
                     id="formTable"
                     :data="teacherList"
-                    border
+                    stripe
                     style="width: 90%;margin: 0 auto"
                 >
+                    <el-table-column
+                        type="index"
+                        label="序号"
+                        :index="indexMethod"
+                        width="50"
+                        align="center"
+                        fixed="left">
+                    </el-table-column>
                     <el-table-column
                         prop="account"
                         label="账号"
@@ -39,7 +47,7 @@
                         prop="sex"
                         label="性别"
                         align="center"
-                        width="120">
+                        width="100">
                     </el-table-column>
                     <el-table-column
                         prop="phone"
@@ -61,7 +69,7 @@
                         align="center"
                         width="150">
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" fixed="right" width="200">
                         <template slot-scope="scope">
                             <el-button
                                 size="mini"
@@ -136,6 +144,7 @@ export default {
             teacherList: [],
             total: 0,
             pageSize: null,
+            currentPage: null,
 
             // 校验规则
             rules: {
@@ -190,9 +199,10 @@ export default {
         const _this = this
         this.$axios.get('http://localhost:8081/user/teacher/getAllTeachers/1').then(function (response) {
             // console.log(response);
-            _this.pageSize = response.data.size
-            _this.teacherList = response.data.records
-            _this.total = response.data.total
+            _this.pageSize = response.data.size;
+            _this.teacherList = response.data.records;
+            _this.total = response.data.total;
+            _this.currentPage = response.data.current;
         }), function (err) {
             console.log(err)
         }
@@ -202,6 +212,10 @@ export default {
         document.getElementById('searchForm').style.width = formWidth
     },
     methods: {
+        indexMethod(index) {
+            index = (index + 1) + (this.currentPage - 1) * this.pageSize;
+            return index
+        },
         // 查询老师
         search() {
             const _this = this
@@ -212,6 +226,7 @@ export default {
                     _this.pageSize = res.data.size
                     _this.teacherList = res.data.records
                     _this.total = res.data.total
+                    _this.currentPage = response.data.current;
                 })
             } else {
                 this.$axios.post('http://localhost:8081/user/teacher/searchTeacher/1', _this.searchForm).then(function (res) {
@@ -219,6 +234,7 @@ export default {
                     _this.pageSize = res.data.size
                     _this.teacherList = res.data.records
                     _this.total = res.data.total
+                    _this.currentPage = response.data.current;
                 })
             }
         },
@@ -244,25 +260,29 @@ export default {
                             window.location.reload()
                             _this.$message({
                                 message: '更改成功',
-                                type: 'success'
+                                type: 'success',
+                                offset: 80
                             })
                             _this.dialogFormVisible = false
                         } else if (response.data === 'phone_duplicate') {
                             _this.$message({
                                 message: '手机号已重复！请重新输入！',
-                                type: 'error'
+                                type: 'error',
+                                offset: 80
                             })
                         } else {
                             _this.$message({
                                 message: '更改失败',
-                                type: 'error'
+                                type: 'error',
+                                offset: 80
                             })
                         }
                     })
                 } else {
                     _this.$message({
                         message: '请确保全部字段符合规则！',
-                        type: 'error'
+                        type: 'error',
+                        offset: 80
                     })
                     return false
                 }
@@ -292,6 +312,7 @@ export default {
                 console.log(_this.form)
                 _this.teacherList = response.data.records
                 _this.total = response.data.total
+                _this.currentPage = response.data.current;
             }, function (err) {
                 console.log(err)
             })
